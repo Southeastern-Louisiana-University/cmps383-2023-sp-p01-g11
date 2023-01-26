@@ -1,4 +1,8 @@
-﻿namespace SP23.P01.Web
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using System.Reflection.Emit;
+
+namespace SP23.P01.Web
 {
     public class TrainStation
     {
@@ -24,6 +28,23 @@
             public string Name { get; set; }
             public int Address { get; set; }
         }
+
+        public class TrainStationConfiguration : IEntityTypeConfiguration<TrainStation>
+            {
+            public void Configure(EntityTypeBuilder<TrainStation> builder)
+            {
+                builder
+                    .Property(t => t.Name)
+                    .IsRequired()
+                    .HasMaxLength(120);
+
+                builder
+                    .Property(x => x.Address)
+                    .IsRequired();
+            }
+
+        } 
+
     }
 }
-}
+
