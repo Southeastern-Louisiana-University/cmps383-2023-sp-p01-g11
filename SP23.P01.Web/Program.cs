@@ -1,3 +1,5 @@
+using SP23.P01.Web;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -8,6 +10,15 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
+if (!db.TrainStations.Any())
+{
+    for (int i = 0; i < 3; i++)
+        db.TrainStations.Add(new TrainStation
+        {
+            Name = i.ToString(),
+            Address = i.ToString(),
+        });
+}
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
