@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System.Reflection;
+using static SP23.P01.Web.TrainStation;
 
 namespace SP23.P01.Web
 {
@@ -15,6 +16,8 @@ namespace SP23.P01.Web
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             OnModelCreating(modelBuilder);
+
+            modelBuilder.ApplyConfiguration(new TrainStationConfiguration());
         }
 
 
