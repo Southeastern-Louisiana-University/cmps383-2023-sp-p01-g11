@@ -16,22 +16,22 @@ using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<DataContext>();
     db.Database.Migrate();
+
+    if (!db.TrainStations.Any())
+    {
+        for (int i = 0; i < 3; i++)
+            db.TrainStations.Add(new TrainStation
+            {
+                Name = i.ToString(),
+                Address = i.ToString(),
+            });
+
+        db.SaveChanges();
+    }
 }
 
 builder.Services.AddDbContext<DataContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DataContext")));
-
-if (!db.TrainStations.Any())
-{
-    for (int i = 0; i < 3; i++)
-        db.TrainStations.Add(new TrainStation
-        {
-            Name = i.ToString(),
-            Address = i.ToString(),
-        });
-
-    db.SaveChanges();
-}
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
