@@ -26,7 +26,13 @@ namespace SP23.P01.Web
             public int Id { get; set; }
 
             public string Name { get; set; }
-            public int Address { get; set; }
+            public string Address { get; set; }
+        }
+
+        public class TrainStationCreateDto
+        {
+            public string? Name { get; set; }
+            public string? Address { get; set; }
         }
 
         public class TrainStationConfiguration : IEntityTypeConfiguration<TrainStation>
