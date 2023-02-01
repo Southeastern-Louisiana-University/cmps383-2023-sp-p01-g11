@@ -48,6 +48,24 @@ namespace SP23.P01.Web.Controllers
 
         }
 
+
+        [HttpDelete("{id}")]
+        public ActionResult Delete([FromRoute] int id)
+        {
+            
+            var trainStationToDelete = _dataContext
+            .Set<TrainStation>()
+            .FirstOrDefault(x => x.Id == id);
+
+            if (trainStationToDelete == null)
+            {
+                return Ok(Response);
+            }
+            _dataContext.SaveChanges();
+            return Ok(Response);
+        }
+
+
         [HttpPost]
         [Route("/api/station")]
         public ActionResult<TrainStation.TrainStationDto> createTrainStation(TrainStation.TrainStationDto TrainStationCreateDto)
