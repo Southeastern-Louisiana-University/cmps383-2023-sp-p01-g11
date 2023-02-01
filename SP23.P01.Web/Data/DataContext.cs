@@ -1,8 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using SP23.P01.Web.Entities;
 using System.Reflection;
-using static SP23.P01.Web.TrainStation;
+using static SP23.P01.Web.Entities.TrainStation;
 
-namespace SP23.P01.Web
+namespace SP23.P01.Web.Data
 {
     public class DataContext : DbContext
     {
