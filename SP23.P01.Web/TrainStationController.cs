@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using System.Reflection.Metadata.Ecma335;
 using static SP23.P01.Web.TrainStation;
 
 namespace SP23.P01.Web
@@ -88,7 +89,47 @@ namespace SP23.P01.Web
                    string.IsNullOrWhiteSpace(dto.Address);
         }
 
+        [HttpPut("{Id:int}")]
+      
+        public ActionResult Update([FromRoute] int id, [FromBody] TrainStationDto TrainStationUpdateDto)
+        {
+            var stationtoUpdate = dataContext.TrainStations.FirstOrDefault(x => x.Id == id);
+            
+            if (TrainStationUpdateDto == null)
+            {
+                return BadRequest();
+            }
 
+            if (string.IsNullOrEmpty(TrainStationUpdateDto.Name?.Trim()))
+            {
+                return BadRequest();
+            }
+
+            if (TrainStationUpdateDto.Name != null && TrainStationUpdateDto.Name.Length > 120)
+            {
+                return BadRequest();
+            }
+
+            if (string.IsNullOrEmpty(TrainStationUpdateDto.Address?.Trim())) 
+            {
+                return BadRequest();
+            }
+
+            stationtoUpdate.Name = TrainStationUpdateDto.Name;
+            stationtoUpdate.Address = TrainStationUpdateDto.Address;
+
+            dataContext.SaveChanges();
+
+            var trainStationToReturn = new TrainStationDto
+            {
+                Id = stationtoUpdate.Id,
+                Name = TrainStationUpdateDto.Name,
+                Address = TrainStationUpdateDto.Address,
+            };
+
+            return Ok(trainStationToReturn);
+        }
+       
     }   
     }
 
