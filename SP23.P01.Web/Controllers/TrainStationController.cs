@@ -52,17 +52,17 @@ namespace SP23.P01.Web.Controllers
         [HttpDelete("{id}")]
         public ActionResult Delete([FromRoute] int id)
         {
-            var response = new Response();
-            var trainToDelete = _dataContext
+            
+            var trainStationToDelete = _dataContext
             .Set<TrainStation>()
             .FirstOrDefault(x => x.Id == id);
 
-            if (trainToDelete == null)
+            if (trainStationToDelete == null)
             {
-                return Ok(response);
+                return Ok(Response);
             }
             _dataContext.SaveChanges();
-            return Ok(response);
+            return Ok(Response);
         }
 
 
