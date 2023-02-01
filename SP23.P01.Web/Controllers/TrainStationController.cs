@@ -85,12 +85,7 @@ namespace SP23.P01.Web.Controllers
                 TrainStationCreateDto);
 
         }
-        private static bool IsInvalid(TrainStation.TrainStationDto dto)
-        {
-            return string.IsNullOrWhiteSpace(dto.Name) ||
-                   dto.Name.Length > 120 ||
-                   string.IsNullOrWhiteSpace(dto.Address);
-        }
+       
 
         [HttpPut("{Id:int}")]
       
@@ -147,6 +142,13 @@ namespace SP23.P01.Web.Controllers
             }
             _dataContext.SaveChanges();
             return Ok(Response);
+        }
+
+        private static bool IsInvalid(TrainStation.TrainStationDto dto)
+        {
+            return string.IsNullOrWhiteSpace(dto.Name) ||
+                   dto.Name.Length > 120 ||
+                   string.IsNullOrWhiteSpace(dto.Address);
         }
 
     }
