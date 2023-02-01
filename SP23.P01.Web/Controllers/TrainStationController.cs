@@ -48,24 +48,6 @@ namespace SP23.P01.Web.Controllers
 
         }
 
-
-        [HttpDelete("{id}")]
-        public ActionResult Delete([FromRoute] int id)
-        {
-            
-            var trainStationToDelete = _dataContext
-            .Set<TrainStation>()
-            .FirstOrDefault(x => x.Id == id);
-
-            if (trainStationToDelete == null)
-            {
-                return Ok(Response);
-            }
-            _dataContext.SaveChanges();
-            return Ok(Response);
-        }
-
-
         [HttpPost]
         [Route("/api/station")]
         public ActionResult<TrainStation.TrainStationDto> createTrainStation(TrainStation.TrainStationDto TrainStationCreateDto)
@@ -106,6 +88,22 @@ namespace SP23.P01.Web.Controllers
             return string.IsNullOrWhiteSpace(dto.Name) ||
                    dto.Name.Length > 120 ||
                    string.IsNullOrWhiteSpace(dto.Address);
+        }
+
+        [HttpDelete("{id}")]
+        public ActionResult Delete([FromRoute] int id)
+        {
+
+            var trainStationToDelete = _dataContext
+            .Set<TrainStation>()
+            .FirstOrDefault(x => x.Id == id);
+
+            if (trainStationToDelete == null)
+            {
+                return Ok(Response);
+            }
+            _dataContext.SaveChanges();
+            return Ok(Response);
         }
 
 
