@@ -2,9 +2,11 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using static SP23.P01.Web.TrainStation;
+using SP23.P01.Web.Data;
+using SP23.P01.Web.Entities;
+using static SP23.P01.Web.Entities.TrainStation;
 
-namespace SP23.P01.Web
+namespace SP23.P01.Web.Controllers
 {
     [ApiController]
     [Route("api/station")]
@@ -16,7 +18,7 @@ namespace SP23.P01.Web
         private DataContext _dataContext;
         public TrainStationController(DataContext dataContext)
         {
-            this._dataContext = dataContext;
+            _dataContext = dataContext;
             trainStations = dataContext.Set<TrainStation>();
         }
 
@@ -34,10 +36,10 @@ namespace SP23.P01.Web
 
         [HttpGet]
         [Route("{id}")]
-        public ActionResult<TrainStationDto> GetbyId(int id)
+        public ActionResult<TrainStation.TrainStationDto> GetbyId(int id)
         {
             var trains = _dataContext.Set<TrainStation>();
-            return Ok(trains.Where(x => x.Id == id).Select(x => new TrainStationDto
+            return base.Ok(trains.Where(x => x.Id == id).Select(x => new TrainStation.TrainStationDto
             {
                 Id = x.Id,
                 Name = x.Name,
@@ -66,7 +68,7 @@ namespace SP23.P01.Web
 
         [HttpPost]
         [Route("/api/station")]
-        public ActionResult<TrainStationDto> createTrainStation(TrainStationDto TrainStationCreateDto)
+        public ActionResult<TrainStation.TrainStationDto> createTrainStation(TrainStation.TrainStationDto TrainStationCreateDto)
         {
             if (IsInvalid(TrainStationCreateDto))
             {
@@ -99,7 +101,7 @@ namespace SP23.P01.Web
                 TrainStationCreateDto);
 
         }
-        private static bool IsInvalid(TrainStationDto dto)
+        private static bool IsInvalid(TrainStation.TrainStationDto dto)
         {
             return string.IsNullOrWhiteSpace(dto.Name) ||
                    dto.Name.Length > 120 ||
@@ -108,5 +110,5 @@ namespace SP23.P01.Web
 
 
     }
-    }
+}
 

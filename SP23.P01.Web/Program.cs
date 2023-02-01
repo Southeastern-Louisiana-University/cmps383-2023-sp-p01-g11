@@ -1,5 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using SP23.P01.Web;
+using SP23.P01.Web.Data;
+using SP23.P01.Web.Entities;
 
 var builder = WebApplication.CreateBuilder(args);
 
