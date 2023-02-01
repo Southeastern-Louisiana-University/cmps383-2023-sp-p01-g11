@@ -7,6 +7,9 @@ namespace SP23.P01.Web.Data
 {
     public class DataContext : DbContext
     {
+        public DataContext()
+        {
+        }
         public DataContext(DbContextOptions<DataContext> options)
             : base(options)
         {
@@ -16,9 +19,17 @@ namespace SP23.P01.Web.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            OnModelCreating(modelBuilder);
+            base.OnModelCreating(modelBuilder);
 
             modelBuilder.ApplyConfiguration(new TrainStationConfiguration());
+        }
+
+        protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
+        {
+            base.ConfigureConventions(configurationBuilder);
+
+            configurationBuilder.Properties<decimal>()
+                .HavePrecision(18, 2);
         }
 
 
