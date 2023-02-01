@@ -129,19 +129,18 @@ namespace SP23.P01.Web.Controllers
         }
 
         [HttpDelete("{id}")]
-        public ActionResult Delete([FromRoute] int id)
+        public ActionResult DeleteStation(int id)
         {
-
-            var trainStationToDelete = _dataContext
-            .Set<TrainStation>()
-            .FirstOrDefault(x => x.Id == id);
-
-            if (trainStationToDelete == null)
+            var station = trainStations.FirstOrDefault(x => x.Id == id);
+            if(station == null)
             {
-                return Ok(Response);
+                return NotFound();
             }
+
+            trainStations.Remove(station);
+            
             _dataContext.SaveChanges();
-            return Ok(Response);
+            return Ok();
         }
 
         private static bool IsInvalid(TrainStation.TrainStationDto dto)
