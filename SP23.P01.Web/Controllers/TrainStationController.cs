@@ -4,7 +4,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using SP23.P01.Web.Data;
 using SP23.P01.Web.Entities;
+using System.Reflection.Metadata.Ecma335;
 using static SP23.P01.Web.Entities.TrainStation;
+
 
 namespace SP23.P01.Web.Controllers
 {
@@ -92,7 +94,7 @@ namespace SP23.P01.Web.Controllers
 
         [HttpPut("{Id:int}")]
       
-        public ActionResult Update([FromRoute] int id, [FromBody] TrainStationDto TrainStationUpdateDto)
+        public ActionResult Update([FromRoute] int id, [FromBody] TrainStation.TrainStationDto TrainStationUpdateDto)
         {
             var stationtoUpdate = dataContext.TrainStations.FirstOrDefault(x => x.Id == id);
             
@@ -121,7 +123,7 @@ namespace SP23.P01.Web.Controllers
 
             dataContext.SaveChanges();
 
-            var trainStationToReturn = new TrainStationDto
+            var trainStationToReturn = new TrainStation.TrainStationDto
             {
                 Id = stationtoUpdate.Id,
                 Name = TrainStationUpdateDto.Name,
@@ -130,8 +132,7 @@ namespace SP23.P01.Web.Controllers
 
             return Ok(trainStationToReturn);
         }
-       
-    }   
+
         [HttpDelete("{id}")]
         public ActionResult Delete([FromRoute] int id)
         {
@@ -148,7 +149,9 @@ namespace SP23.P01.Web.Controllers
             return Ok(Response);
         }
 
-
     }
+
+
 }
+
 
