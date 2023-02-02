@@ -1,159 +1,127 @@
-﻿using Azure;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
 using SP23.P01.Web.Data;
 using SP23.P01.Web.Entities;
-using System.Reflection.Metadata.Ecma335;
-using static SP23.P01.Web.Entities.TrainStation;
 
 
 namespace SP23.P01.Web.Controllers
 {
     [ApiController]
-    [Route("api/station")]
+    [Route("/api/stations")]
     public class TrainStationController : ControllerBase
     {
-        private readonly DataContext dataContext;
+
+
+        private readonly ILogger<TrainStationController> _logger;
         private readonly DbSet<TrainStation> trainStations;
+        private readonly DataContext dataContext;
 
-        private DataContext _dataContext;
-        public TrainStationController(DataContext dataContext)
+        public TrainStationController(ILogger<TrainStationController> logger, DataContext datacontext)
         {
-            _dataContext = dataContext;
-            trainStations = dataContext.Set<TrainStation>();
+            _logger = logger;
+            this.dataContext = datacontext;
+            trainStations = datacontext.Set<TrainStation>();
         }
 
         [HttpGet]
-        public ActionResult<TrainStation[]> Get()
+        public IQueryable<TrainStationDto> GetAll()
         {
-            var trains = _dataContext.Set<TrainStation>();
-            return Ok(trains.Select(x => new TrainStation
-            {
-                Id = x.Id,
-                Name = x.Name,
-                Address = x.Address,
-            }));
+            return GetTrainStationDtos(trainStations);
         }
 
         [HttpGet]
-        [Route("{id}")]
-        public ActionResult<TrainStation.TrainStationDto> GetbyId(int id)
+        [Route("/api/stations/{id}")]
+        public ActionResult<TrainStationDto> GetTrainStationById(int id)
         {
-            var trains = _dataContext.Set<TrainStation>();
-            return base.Ok(trains.Where(x => x.Id == id).Select(x => new TrainStation.TrainStationDto
+            var result = GetTrainStationDtos(trainStations.Where(x => x.Id == id)).FirstOrDefault();
+            if (result == null)
             {
-                Id = x.Id,
-                Name = x.Name,
-                Address = x.Address
-            }));
+                return NotFound();
+            }
 
+            return Ok(result);
         }
 
         [HttpPost]
-        [Route("/api/station")]
-        public ActionResult<TrainStation.TrainStationDto> createTrainStation(TrainStation.TrainStationDto TrainStationCreateDto)
+        [Route("/api/stations")]
+        public ActionResult<TrainStationDto> createTrainStation(TrainStationDto dto)
         {
-            if (IsInvalid(TrainStationCreateDto))
+            if (IsInvalid(dto))
             {
                 return BadRequest();
             }
 
-            var trains = _dataContext.Set<TrainStation>();
 
-            var trainStationToAdd = new TrainStation
-            {
-                Name = TrainStationCreateDto.Name,
-                Address = TrainStationCreateDto.Address,
-            };
+            var newTrainStation = new TrainStation();
+            newTrainStation.Name = dto.Name;
+            newTrainStation.Address = dto.Address;
 
-            _dataContext.TrainStations.Add(trainStationToAdd);
-            _dataContext.SaveChanges();
-
-            TrainStationCreateDto.Id = trainStationToAdd.Id;
-
-            var trainStationToReturn = new TrainStationGetDto
-            {
-                Name = trainStationToAdd.Name,
-                Address = trainStationToAdd.Address,
-            };
-
-
-            return CreatedAtAction
-                (nameof(GetbyId),
-                new { id = TrainStationCreateDto.Id },
-                TrainStationCreateDto);
-
-        }
-       
-
-        [HttpPut("{Id:int}")]
-      
-        public ActionResult Update([FromRoute] int id, [FromBody] TrainStation.TrainStationDto TrainStationUpdateDto)
-        {
-            var stationtoUpdate = dataContext.TrainStations.FirstOrDefault(x => x.Id == id);
-            
-            if (TrainStationUpdateDto == null)
-            {
-                return BadRequest();
-            }
-
-            if (string.IsNullOrEmpty(TrainStationUpdateDto.Name?.Trim()))
-            {
-                return BadRequest();
-            }
-
-            if (TrainStationUpdateDto.Name != null && TrainStationUpdateDto.Name.Length > 120)
-            {
-                return BadRequest();
-            }
-
-            if (string.IsNullOrEmpty(TrainStationUpdateDto.Address?.Trim())) 
-            {
-                return BadRequest();
-            }
-
-            stationtoUpdate.Name = TrainStationUpdateDto.Name;
-            stationtoUpdate.Address = TrainStationUpdateDto.Address;
+            trainStations.Add(newTrainStation);
 
             dataContext.SaveChanges();
 
-            var trainStationToReturn = new TrainStation.TrainStationDto
-            {
-                Id = stationtoUpdate.Id,
-                Name = TrainStationUpdateDto.Name,
-                Address = TrainStationUpdateDto.Address,
-            };
+            dto.Id = newTrainStation.Id;
 
-            return Ok(trainStationToReturn);
+            return CreatedAtAction(nameof(GetTrainStationById), new { id = dto.Id }, dto); ;
         }
 
-        [HttpDelete("{id}")]
-        public ActionResult Delete([FromRoute] int id)
+        [HttpPut]
+        [Route("/api/stations/{id}")]
+        public ActionResult<TrainStationDto> updateTrainStation(int id, TrainStationDto dto)
         {
-
-            var trainStationToDelete = _dataContext
-            .Set<TrainStation>()
-            .FirstOrDefault(x => x.Id == id);
-
-            if (trainStationToDelete == null)
+            if (IsInvalid(dto))
             {
-                return Ok(Response);
+                return BadRequest();
             }
-            _dataContext.SaveChanges();
-            return Ok(Response);
+
+
+            var trainStation = trainStations.FirstOrDefault(x => x.Id == id);
+            if (trainStation == null)
+            {
+                return NotFound();
+            }
+
+            trainStation.Name = dto.Name;
+            trainStation.Address = dto.Address;
+
+            dataContext.SaveChanges();
+
+            dto.Id = trainStation.Id;
+
+
+            return Ok(dto);
         }
 
-        private static bool IsInvalid(TrainStation.TrainStationDto dto)
+        [HttpDelete]
+        [Route("/api/stations/{id}")]
+        public ActionResult<TrainStationDto> deleteTrainStation(int id)
         {
-            return string.IsNullOrWhiteSpace(dto.Name) ||
-                   dto.Name.Length > 120 ||
-                   string.IsNullOrWhiteSpace(dto.Address);
+            var station = trainStations.FirstOrDefault(x => x.Id == id);
+            if (station == null)
+            {
+                return NotFound();
+            }
+
+            trainStations.Remove(station);
+            dataContext.SaveChanges();
+
+            return Ok();
         }
 
+        public static IQueryable<TrainStationDto> GetTrainStationDtos(IQueryable<TrainStation> trainStations)
+        {
+            return trainStations
+                .Select(x => new TrainStationDto
+                {
+                    Id = x.Id,
+                    Name = x.Name,
+                    Address = x.Address
+                });
+        }
+
+        private static bool IsInvalid(TrainStationDto dto)
+        {
+            return string.IsNullOrWhiteSpace(dto.Name) || string.IsNullOrWhiteSpace(dto.Address) || dto.Name.Length > 120;
+        }
     }
-
-
 }
-
-
