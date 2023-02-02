@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using SP23.P01.Web.Entities;
 
 namespace SP23.P01.Web.Controllers
 {
