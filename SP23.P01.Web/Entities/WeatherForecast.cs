@@ -1,4 +1,4 @@
-namespace SP23.P01.Web
+namespace SP23.P01.Web.Entities
 {
     public class WeatherForecast
     {
